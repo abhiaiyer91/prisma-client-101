@@ -87,13 +87,24 @@ server.post("/post/publish/:id", async (req, res) => {
 
 server.get("/post/:id", async (req, res) => {
   const postId = req.params.id;
-  // Use the createPost API from prisma client
+  // Use the post API from prisma client
   try {
     const post = await prisma.post({
       id: postId
     });
 
-    return res.send(post).status(200);
+    const author = await prisma
+      .post({
+        id: postId
+      })
+      .author();
+
+    return res
+      .send({
+        ...post,
+        author
+      })
+      .status(200);
   } catch (e) {
     console.error(e);
 
